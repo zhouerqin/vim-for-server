@@ -1,0 +1,44 @@
+# Vim 临时文件
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Vim 备份、交换和撤销文件目录
+.vim/backup/
+.vim/swap/
+.vim/undo/
+
+# IDE 和编辑器配置
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# 系统文件
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# 编译生成的文件
+*.class
+*.pyc
+__pycache__/
+*.o
+*.so
+
+# 依赖管理目录
+node_modules/
+venv/
+.env/
+.venv/
+pip-log.txt
