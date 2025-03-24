@@ -36,26 +36,18 @@ set fileencoding=utf-8
 " 设置文件格式为Unix
 set fileformat=unix
 
-" 设置备份文件目录
-set backupdir=~/.vim/backup//
-
-" 设置交换文件目录  
-set directory=~/.vim/swap//
-
-" 设置撤销文件目录
-set undodir=~/.vim/undo//
-
-" 启用撤销历史持久化
-set undofile
+" 禁用撤销文件
+set noundofile
+" 禁用备份文件
+set nobackup
+" 禁用交换文件
+set noswapfile
 
 " 设置历史记录长度
 set history=1000
 
 " 设置命令行高度
 set cmdheight=2
-
-" 设置鼠标支持
-set mouse=a
 
 " 设置粘贴模式
 set paste
