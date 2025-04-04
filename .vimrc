@@ -152,3 +152,15 @@ let python_highlight_space_errors = 1
 highlight link pythonFunction Function
 highlight link pythonOperator Operator
 highlight link pythonString String
+
+" ====== Dockerfile配置 ======
+" 设置Dockerfile文件类型
+autocmd BufNewFile,BufRead Dockerfile,*.dockerfile set filetype=dockerfile
+
+" Dockerfile缩进和格式设置
+autocmd FileType dockerfile setlocal tabstop=2
+autocmd FileType dockerfile setlocal shiftwidth=2
+autocmd FileType dockerfile setlocal softtabstop=2
+autocmd FileType dockerfile setlocal expandtab
+autocmd FileType dockerfile setlocal textwidth=80
+autocmd FileType dockerfile setlocal commentstring=#\ %s
