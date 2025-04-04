@@ -1,78 +1,73 @@
-" 显示行号
-set number
+" ====== 基础设置 ======
+" 禁用兼容模式，启用现代Vim特性
+set nocompatible
+" 使用UTF-8编码
+set encoding=utf-8
+" 启用文件类型检测
+filetype on
+" 启用文件类型缩进
+filetype indent on
+" 启用语法高亮
+syntax enable
 
-" 高亮当前行
-set cursorline
+" ====== Shell 脚本专属配置 ======
+" Google Shell脚本规范要求：
+" - 使用2空格缩进
+" - 行宽限制80字符
+" - 使用空格替代Tab
+" - Shebang使用#!/bin/bash
 
+" 设置.sh文件类型
+autocmd BufNewFile,BufRead *.sh set filetype=sh
+
+" Shell文件缩进和格式设置
+autocmd FileType sh setlocal tabstop=2
+autocmd FileType sh setlocal shiftwidth=2
+autocmd FileType sh setlocal softtabstop=2
+autocmd FileType sh setlocal expandtab
+autocmd FileType sh setlocal textwidth=80
+autocmd FileType sh setlocal formatoptions-=t
+autocmd FileType sh setlocal iskeyword+=@,-,_
+autocmd FileType sh setlocal commentstring=#\ %s
+
+" 自动添加Shebang
+autocmd BufNewFile *.sh call append(0, ['#!/bin/bash', ''])
+
+" Shell文件快捷键映射
+" F5执行当前脚本
+if !hasmapto('<F5>', 'n')
+    autocmd FileType sh nnoremap <buffer> <F5> :w<CR>:!bash %<CR>
+endif
+
+" ====== 通用格式规范 ======
 " 自动缩进
 set autoindent
-
-" 显示匹配的括号
+" 高亮匹配括号
 set showmatch
+" 特殊字符显示设置
+set listchars=tab:→\ ,trail:·
+" Shell文件中显示特殊字符
+autocmd FileType sh set list
 
-" 搜索时忽略大小写
-set ignorecase
+" 保存时自动格式化
+" 删除行尾空格
+autocmd BufWritePre *.sh :%s/\s\+$//e
+" 转换Tab为空格
+autocmd BufWritePre *.sh :retab
 
-" 搜索时高亮显示匹配结果
-set hlsearch
+" ====== 语法高亮增强 ======
+" Shell脚本特殊语法高亮
+highlight link shShebang Comment
+highlight link shFunction Function
+highlight link shTestOpr Operator
 
-" 设置tab为4个空格
-set tabstop=4
-set shiftwidth=4
-set expandtab
+" ====== 其他语言兼容 ======
+" Windows批处理文件设置
+" 保留Tab字符，8空格宽度
+autocmd FileType dosbatch setlocal noexpandtab
+autocmd FileType dosbatch setlocal tabstop=8
 
-" 显示命令输入
-set showcmd
-
-" 启用语法高亮
-syntax on
-
-" 设置编码为UTF-8
-set encoding=utf-8
-
-" 设置文件编码为UTF-8
-set fileencoding=utf-8
-
-" 设置文件格式为Unix
-set fileformat=unix
-
-" 禁用撤销文件
-set noundofile
-" 禁用备份文件
-set nobackup
-" 禁用交换文件
-set noswapfile
-
-" 设置历史记录长度
-set history=1000
-
-" 设置命令行高度
-set cmdheight=2
-
-" 设置粘贴模式
-set paste
-
-" 设置自动保存
-set autowrite
-
-" 设置自动读取外部修改
-set autoread
-
-" 设置文件类型检测
-filetype on
-filetype plugin on
-filetype indent on
-
-" 保存时自动删除行尾空格
-autocmd BufWritePre *.sh,*.py,*.js,*.java,*.md,*.yml,*.yaml,*.json,*.txt :%s/\s\+$//e
-
-autocmd FileType sh setlocal tabstop=2 shiftwidth=2
-autocmd FileType python setlocal tabstop=4 shiftwidth=4
-autocmd FileType java setlocal tabstop=4 shiftwidth=4
-autocmd FileType javascript setlocal tabstop=4 shiftwidth=4
-autocmd FileType html setlocal tabstop=4 shiftwidth=4
-autocmd FileType css setlocal tabstop=4 shiftwidth=4
-autocmd FileType xml setlocal tabstop=4 shiftwidth=4
-autocmd FileType php setlocal tabstop=4 shiftwidth=4
-autocmd FileType markdown setlocal tabstop=2 shiftwidth=2
-autocmd FileType yaml,yml setlocal tabstop=2 shiftwidth=2
+" PowerShell脚本设置
+" 使用空格缩进，2空格宽度
+autocmd FileType ps1 setlocal expandtab
+autocmd FileType ps1 setlocal tabstop=2
