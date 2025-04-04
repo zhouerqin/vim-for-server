@@ -9,8 +9,16 @@ filetype on
 filetype indent on
 " 启用语法高亮
 syntax enable
+" 确保backspace能正常工作
+set backspace=indent,eol,start
+" 自动缩进
+set autoindent
+" 高亮匹配括号
+set showmatch
+" 特殊字符显示设置
+set listchars=tab:→\ ,trail:·
 
-" ====== Shell 脚本专属配置 ======
+" ====== Shell脚本配置 ======
 " Google Shell脚本规范要求：
 " - 使用2空格缩进
 " - 行宽限制80字符
@@ -130,7 +138,3 @@ let python_highlight_space_errors = 1
 highlight link pythonFunction Function
 highlight link pythonOperator Operator
 highlight link pythonString String
-
-" ====== 基础设置 ======
-" 确保backspace能正常工作
-set backspace=indent,eol,start
