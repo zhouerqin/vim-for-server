@@ -71,3 +71,24 @@ autocmd FileType dosbatch setlocal tabstop=8
 " 使用空格缩进，2空格宽度
 autocmd FileType ps1 setlocal expandtab
 autocmd FileType ps1 setlocal tabstop=2
+
+" ====== YAML文件配置 ======
+" 设置.yaml文件类型
+autocmd BufNewFile,BufRead *.yaml,*.yml set filetype=yaml
+
+" YAML文件缩进和格式设置
+autocmd FileType yaml setlocal tabstop=2
+autocmd FileType yaml setlocal shiftwidth=2
+autocmd FileType yaml setlocal softtabstop=2
+autocmd FileType yaml setlocal expandtab
+autocmd FileType yaml setlocal textwidth=80
+autocmd FileType yaml setlocal commentstring=#\ %s
+
+" YAML文件中显示特殊字符
+autocmd FileType yaml set list
+
+" 保存时自动格式化
+" 删除行尾空格
+autocmd BufWritePre *.yaml,*.yml :%s/\s\+$//e
+" 转换Tab为空格
+autocmd BufWritePre *.yaml,*.yml :retab
