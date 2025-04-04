@@ -130,3 +130,7 @@ let python_highlight_space_errors = 1
 highlight link pythonFunction Function
 highlight link pythonOperator Operator
 highlight link pythonString String
+
+" ====== 基础设置 ======
+" 确保backspace能正常工作
+set backspace=indent,eol,start
