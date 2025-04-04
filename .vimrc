@@ -23,6 +23,7 @@ set listchars=tab:→\ ,trail:·
 if executable('shfmt')
     autocmd FileType sh nnoremap <buffer> =G :%!shfmt -i 2 -ci -sr<CR>
     autocmd FileType sh vnoremap <buffer> = :!shfmt -i 2 -ci -sr<CR>
+    autocmd BufWritePre *.sh :%!shfmt -i 2 -ci -sr
 endif
 
 " Google Shell脚本规范要求：
