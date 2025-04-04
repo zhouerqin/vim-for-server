@@ -19,6 +19,12 @@ set showmatch
 set listchars=tab:→\ ,trail:·
 
 " ====== Shell脚本配置 ======
+" 检查并设置shfmt格式化
+if executable('shfmt')
+    autocmd FileType sh nnoremap <buffer> =G :%!shfmt -i 2 -ci -sr<CR>
+    autocmd FileType sh vnoremap <buffer> = :!shfmt -i 2 -ci -sr<CR>
+endif
+
 " Google Shell脚本规范要求：
 " - 使用2空格缩进
 " - 行宽限制80字符
