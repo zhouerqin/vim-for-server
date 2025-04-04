@@ -92,3 +92,41 @@ autocmd FileType yaml set list
 autocmd BufWritePre *.yaml,*.yml :%s/\s\+$//e
 " 转换Tab为空格
 autocmd BufWritePre *.yaml,*.yml :retab
+
+" ====== Python文件配置 ======
+" 设置.py文件类型
+autocmd BufNewFile,BufRead *.py set filetype=python
+
+" Python文件缩进和格式设置 (PEP8标准)
+autocmd FileType python setlocal tabstop=4
+autocmd FileType python setlocal shiftwidth=4
+autocmd FileType python setlocal softtabstop=4
+autocmd FileType python setlocal expandtab
+autocmd FileType python setlocal textwidth=79
+autocmd FileType python setlocal colorcolumn=80
+autocmd FileType python setlocal commentstring=#\ %s
+
+" 自动添加Shebang
+autocmd BufNewFile *.py call append(0, ['#!/usr/bin/env python3', '', ''])
+
+" Python文件快捷键映射
+" F5执行当前脚本
+if !hasmapto('<F5>', 'n')
+    autocmd FileType python nnoremap <buffer> <F5> :w<CR>:!python3 %<CR>
+endif
+
+" Python文件中显示特殊字符
+autocmd FileType python set list
+
+" 保存时自动格式化
+" 删除行尾空格
+autocmd BufWritePre *.py :%s/\s\+$//e
+" 转换Tab为空格
+autocmd BufWritePre *.py :retab
+
+" ====== Python语法高亮增强 ======
+let python_highlight_all = 1
+let python_highlight_space_errors = 1
+highlight link pythonFunction Function
+highlight link pythonOperator Operator
+highlight link pythonString String
