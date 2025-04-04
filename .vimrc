@@ -112,6 +112,7 @@ autocmd BufWritePre *.yaml,*.yml :retab
 if executable('black')
     autocmd FileType python nnoremap <buffer> =G :%!black --quiet -<CR>
     autocmd FileType python vnoremap <buffer> = :!black --quiet -<CR>
+    autocmd BufWritePre *.py :%!black --quiet -
 endif
 
 " 设置.py文件类型
