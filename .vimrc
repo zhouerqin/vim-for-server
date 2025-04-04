@@ -108,6 +108,12 @@ autocmd BufWritePre *.yaml,*.yml :%s/\s\+$//e
 autocmd BufWritePre *.yaml,*.yml :retab
 
 " ====== Python文件配置 ======
+" 检查并设置black格式化
+if executable('black')
+    autocmd FileType python nnoremap <buffer> =G :%!black --quiet -<CR>
+    autocmd FileType python vnoremap <buffer> = :!black --quiet -<CR>
+endif
+
 " 设置.py文件类型
 autocmd BufNewFile,BufRead *.py set filetype=python
 
