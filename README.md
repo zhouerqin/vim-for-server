@@ -1,33 +1,17 @@
-# Vim 配置项目
+# 无插件Vim配置
 
-## 简介
+## 特性亮点
 
-本项目提供了一个适用于 Vim 编辑器的配置文件，旨在通过简单的步骤帮助用户快速配置和优化他们的 Vim 环境。
+✨ **零插件设计** - 仅用Vim原生功能实现高效编辑  
+✨ 内置Shell/Python/YAML/Dockerfile等语言支持  
+✨ 自动格式化（需shfmt/black）  
+✨ 保存时自动清理文件格式  
+✨ 统一编码规范（UTF-8 + 空格缩进）
 
-## 文件结构
+## 快速开始
 
-- `.vimrc`: Vim 编辑器的配置文件
-
-## 使用说明
-
-1. 克隆或下载本项目到本地环境。
-2. 将 `.vimrc` 文件复制到您的用户主目录下。
-3. 启动 Vim 编辑器，配置将自动应用。
-
-## 注意事项
-
-- 请确保您已经安装了 Vim 编辑器。
-- 本配置文件适用于 Vim 编辑器，其他编辑器可能不兼容。
-- 根据个人需求和偏好，您可以调整 `.vimrc` 文件中的配置内容。
-
-## 维护者
-
-- 本项目由 [zhouerqin](mailto:zhouerqin@qq.com) 维护。
-
-## 贡献
-
-如果您有任何改进意见或想要贡献新的插件，请随时提交 Pull Request 或创建 Issue。我们欢迎所有形式的贡献，共同提升项目的质量。
-
----
-
-感谢您对本项目的关注和支持！
+```bash
+cd ~
+git clone https://github.com/zhouerqin/vim-for-server.git
+ln -s ~/vim-for-server/.vimrc ~/.vimrc
+```
