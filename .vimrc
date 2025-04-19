@@ -28,8 +28,9 @@ if executable('shfmt')
         \   silent %d _ |
         \   call setline(1, split(b:shfmt_result, "\n")) |
         \ else |
+        \   redraw |
         \   echohl ErrorMsg |
-        \   echomsg "shfmt 格式化失败: " . b:shfmt_result |
+        \   echo "shfmt 格式化失败: " . b:shfmt_result |
         \   echohl None |
         \ endif
 endif
