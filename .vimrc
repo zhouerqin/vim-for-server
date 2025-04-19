@@ -17,13 +17,21 @@ set autoindent
 set showmatch
 " 特殊字符显示设置
 set listchars=tab:→\ ,trail:·
-
 " ====== Shell脚本配置 ======
-" 检查并设置shfmt格式化
 if executable('shfmt')
     autocmd FileType sh nnoremap <buffer> =G :%!shfmt -i 2 -ci -sr<CR>
-    autocmd FileType sh vnoremap <buffer> = :!shfmt -i 2 -ci -sr<CR>
-    autocmd BufWritePre *.sh :%!shfmt -i 2 -ci -sr
+    autocmd FileType sh vnoremap <buffer> = :'<,'>!shfmt -i 2 -ci -sr<CR>
+    autocmd BufWritePre *.sh
+        \ let b:shfmt_save = getline(1,'$') |
+        \ let b:shfmt_result = system('shfmt -i 2 -ci -sr 2>&1', join(b:shfmt_save, "\n")) |
+        \ if v:shell_error == 0 |
+        \   silent %d _ |
+        \   call setline(1, split(b:shfmt_result, "\n")) |
+        \ else |
+        \   echohl ErrorMsg |
+        \   echomsg "shfmt 格式化失败: " . b:shfmt_result |
+        \   echohl None |
+        \ endif
 endif
 
 " Google Shell脚本规范要求：
