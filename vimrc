@@ -7,6 +7,8 @@ set encoding=utf-8
 filetype on
 " 启用文件类型缩进
 filetype indent on
+" 启用文件类型插件
+filetype plugin on
 " 启用语法高亮
 syntax enable
 " 确保backspace能正常工作
@@ -15,25 +17,104 @@ set backspace=indent,eol,start
 set autoindent
 " 高亮匹配括号
 set showmatch
+" 设置单词分隔符，允许连字符(-)作为单词的一部分，便于补全带连字符的单词
+set iskeyword+=@,-,_ 
 " 特殊字符显示设置
-set listchars=tab:→\ ,trail:·
-" ====== Shell脚本配置 ======
-if executable('shfmt')
-    autocmd FileType sh nnoremap <buffer> =G :%!shfmt -i 2 -ci -sr<CR>
-    autocmd FileType sh vnoremap <buffer> = :'<,'>!shfmt -i 2 -ci -sr<CR>
-    autocmd BufWritePre *.sh
-        \ let b:shfmt_save = getline(1,'$') |
-        \ let b:shfmt_result = system('shfmt -i 2 -ci -sr 2>&1', join(b:shfmt_save, "\n")) |
-        \ if v:shell_error == 0 |
-        \   silent %d _ |
-        \   call setline(1, split(b:shfmt_result, "\n")) |
-        \ else |
-        \   redraw |
-        \   echohl ErrorMsg |
-        \   echo "shfmt 格式化失败: " . b:shfmt_result |
-        \   echohl None |
-        \ endif
-endif
+" tab:→ 表示Tab显示为→+空格
+" trail:· 表示行尾空格显示为·
+" nbsp:␣  表示非断行空格显示为␣
+set listchars=tab:→\ ,trail:·,nbsp:␣
+" 提供便捷的开关命令：<F3>切换特殊字符显示
+nnoremap <silent> <F3> :set list!<CR> :echo '特殊字符显示：' . (&list ? '开启' : '关闭')<CR>
+
+" ====== 服务器端优化设置 ======
+" 禁用鼠标（服务器端SSH连接不需要）
+set mouse=
+" 显示行号
+set number
+" 自动读取文件变化（适合查看日志）
+set autoread
+" 增强注释颜色对比度，确保清晰可见
+autocmd VimEnter * highlight Comment ctermfg=109 guifg=#6a9955
+" 如果是浅色主题，调整注释颜色
+autocmd ColorScheme * if &background == 'light' | highlight Comment ctermfg=24 guifg=#006600 | endif
+" 搜索高亮（使用柔和的颜色）
+set hlsearch
+" 调整搜索高亮颜色为柔和的黄色
+autocmd VimEnter * highlight Search ctermbg=187 guibg=#ffd700 ctermfg=0 guifg=#000000
+" 如果是浅色主题，使用不同的搜索高亮颜色
+autocmd ColorScheme * if &background == 'light' | highlight Search ctermbg=220 guibg=#fff3cd ctermfg=0 guifg=#000000 | endif
+" 调整颜色列颜色为柔和的灰色
+autocmd VimEnter * highlight ColorColumn ctermbg=236 guibg=#3a3a3a
+" 如果是浅色主题，使用更浅的颜色
+autocmd ColorScheme * if &background == 'light' | highlight ColorColumn ctermbg=253 guibg=#f5f5f5 | endif
+" 搜索时忽略大小写
+set ignorecase
+" 智能大小写搜索
+set smartcase
+" 增量搜索
+set incsearch
+" 命令行补全
+set wildmenu
+set wildmode=longest:full,full
+" 历史记录长度
+set history=1000
+" 隐藏缓冲区而不是关闭
+set hidden
+" 更快的更新时间
+set updatetime=300
+" 禁止显示模式切换消息
+set noshowmode
+" 滚动时保持光标居中
+set scrolloff=8
+set sidescrolloff=8
+" 简化状态栏
+set laststatus=2
+set statusline=%F%m%r%h%w\ [TYPE=%Y]\ [LN=%l,COL=%v][%p%%]
+" 命令行高度
+set cmdheight=1
+" 禁用折叠
+set nofoldenable
+" 禁用拼写检查
+set nospell
+
+
+
+" ====== 手动格式化命令 ======
+" 手动删除行尾空格：:CleanTrailingWhitespace
+command! CleanTrailingWhitespace :%s/\s\+$//e
+" 手动转换Tab为空格：:RetabAll
+command! RetabAll :retab
+" 手动格式化当前文件：:FormatFile
+command! FormatFile :call FormatCurrentFile()
+
+" 格式化函数定义
+function! FormatCurrentFile()
+    " 保存当前位置
+    let save_cursor = getpos('.')
+    " 删除行尾空格
+    silent! %s/\s\+$//e
+    " 转换Tab为空格
+    silent! retab
+    " 恢复光标位置
+    call setpos('.', save_cursor)
+    echo "文件格式化完成"
+endfunction
+
+" ====== 选择性自动处理 ======
+" 仅对特定文件类型启用自动处理（可选）
+" autocmd FileType sh,yaml,json,xml,html,css,js,py BufWritePre <buffer> :%s/\s\+$//e
+" autocmd FileType sh,yaml,json,xml,html,css,js,py BufWritePre <buffer> :retab
+
+" ====== 日志查看增强 ======
+" 当打开大文件时，优化性能
+autocmd BufReadPre,FileReadPre * if getfsize(expand("%")) > 1000000 | setlocal noswapfile nobackup noundofile shada= | endif
+" 日志文件自动高亮
+autocmd BufRead,BufNewFile *.log,*.LOG set syntax=log
+" 日志文件禁用行号（处理超大日志文件时提高性能）
+autocmd BufRead,BufNewFile *.log,*.LOG setlocal nonumber
+
+" ====== Shell脚本配置 =====
 
 " Google Shell脚本规范要求：
 " - 使用2空格缩进
@@ -57,27 +138,10 @@ autocmd FileType sh setlocal commentstring=#\ %s
 " 自动添加Shebang
 autocmd BufNewFile *.sh call append(0, ['#!/bin/bash', ''])
 
-" Shell文件快捷键映射
-" F5执行当前脚本
-if !hasmapto('<F5>', 'n')
-    autocmd FileType sh nnoremap <buffer> <F5> :w<CR>:!bash %<CR>
-endif
 
-" ====== 通用格式规范 ======
-" 自动缩进
-set autoindent
-" 高亮匹配括号
-set showmatch
-" 特殊字符显示设置
-set listchars=tab:→\ ,trail:·
+
 " Shell文件中显示特殊字符
 autocmd FileType sh set list
-
-" 保存时自动格式化
-" 删除行尾空格
-autocmd BufWritePre *.sh :%s/\s\+$//e
-" 转换Tab为空格
-autocmd BufWritePre *.sh :retab
 
 " ====== 语法高亮增强 ======
 " Shell脚本特殊语法高亮
@@ -111,19 +175,7 @@ autocmd FileType yaml setlocal commentstring=#\ %s
 " YAML文件中显示特殊字符
 autocmd FileType yaml set list
 
-" 保存时自动格式化
-" 删除行尾空格
-autocmd BufWritePre *.yaml,*.yml :%s/\s\+$//e
-" 转换Tab为空格
-autocmd BufWritePre *.yaml,*.yml :retab
-
-" ====== Python文件配置 ======
-" 检查并设置black格式化
-if executable('black')
-    autocmd FileType python nnoremap <buffer> =G :%!black --quiet -<CR>
-    autocmd FileType python vnoremap <buffer> = :!black --quiet -<CR>
-    autocmd BufWritePre *.py :%!black --quiet -
-endif
+" ====== Python文件配置 =====
 
 " 设置.py文件类型
 autocmd BufNewFile,BufRead *.py set filetype=python
@@ -140,20 +192,10 @@ autocmd FileType python setlocal commentstring=#\ %s
 " 自动添加Shebang
 autocmd BufNewFile *.py call append(0, ['#!/usr/bin/env python3', '', ''])
 
-" Python文件快捷键映射
-" F5执行当前脚本
-if !hasmapto('<F5>', 'n')
-    autocmd FileType python nnoremap <buffer> <F5> :w<CR>:!python3 %<CR>
-endif
+
 
 " Python文件中显示特殊字符
 autocmd FileType python set list
-
-" 保存时自动格式化
-" 删除行尾空格
-autocmd BufWritePre *.py :%s/\s\+$//e
-" 转换Tab为空格
-autocmd BufWritePre *.py :retab
 
 " ====== Python语法高亮增强 ======
 let python_highlight_all = 1
