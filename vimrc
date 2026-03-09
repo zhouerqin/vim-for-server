@@ -34,20 +34,68 @@ set mouse=
 set number
 " 自动读取文件变化（适合查看日志）
 set autoread
-" 增强注释颜色对比度，确保清晰可见
-autocmd VimEnter * highlight Comment ctermfg=109 guifg=#6a9955
-" 如果是浅色主题，调整注释颜色
-autocmd ColorScheme * if &background == 'light' | highlight Comment ctermfg=24 guifg=#006600 | endif
-" 搜索高亮（使用柔和的颜色）
+
+" ====== 配色与可读性增强 ======
+" 设置终端颜色支持
+set t_Co=256
+
+" 当前行高亮（提升定位感）
+set cursorline
+highlight CursorLine cterm=NONE ctermbg=236 guibg=#2d2d2d
+
+" 可视化选择区域（更醒目）
+highlight Visual cterm=NONE ctermbg=239 ctermfg=NONE guibg=#4e4e4e
+
+" 注释颜色 - 提高对比度（更亮的绿色）
+highlight Comment ctermfg=150 guifg=#afd787
+
+" 搜索高亮 - 更醒目但不刺眼
 set hlsearch
-" 调整搜索高亮颜色为柔和的黄色
-autocmd VimEnter * highlight Search ctermbg=187 guibg=#ffd700 ctermfg=0 guifg=#000000
-" 如果是浅色主题，使用不同的搜索高亮颜色
-autocmd ColorScheme * if &background == 'light' | highlight Search ctermbg=220 guibg=#fff3cd ctermfg=0 guifg=#000000 | endif
-" 调整颜色列颜色为柔和的灰色
-autocmd VimEnter * highlight ColorColumn ctermbg=236 guibg=#3a3a3a
-" 如果是浅色主题，使用更浅的颜色
-autocmd ColorScheme * if &background == 'light' | highlight ColorColumn ctermbg=253 guibg=#f5f5f5 | endif
+highlight Search ctermbg=214 ctermfg=16 guibg=#ffaf00 guifg=#000000
+highlight IncSearch ctermbg=202 ctermfg=231 guibg=#ff5f00 guifg=#ffffff
+
+" 颜色列（Python 80列提示）
+highlight ColorColumn ctermbg=238 guibg=#444444
+
+" 字符串颜色 - 更清晰
+highlight String ctermfg=180 guifg=#d4c49a
+
+" 数字颜色
+highlight Number ctermfg=167 guifg=#d75f5f
+
+" 关键字颜色
+highlight Keyword ctermfg=140 guifg=#af87d7
+
+" 函数名颜色
+highlight Function ctermfg=117 guifg=#87d7ff
+
+" 类型/类名颜色
+highlight Type ctermfg=167 guifg=#d75f5f
+
+" 错误和警告
+highlight Error ctermfg=231 ctermbg=196 guifg=#ffffff guibg=#ff0000
+highlight WarningMsg ctermfg=214 guifg=#ffaf00
+
+" 行号颜色
+highlight LineNr ctermfg=244 guifg=#808080
+
+" 匹配括号高亮
+highlight MatchParen cterm=bold ctermbg=239 ctermfg=231 gui=bold guibg=#4e4e4e guifg=#ffffff
+
+" ====== vimdiff 配色优化 ======
+" 差异背景色（深色主题）
+highlight DiffAdd ctermbg=22 ctermfg=NONE guibg=#1d421d guifg=NONE
+highlight DiffDelete ctermbg=52 ctermfg=NONE guibg=#421d1d guifg=NONE
+highlight DiffChange ctermbg=17 ctermfg=NONE guibg=#1d2d4d guifg=NONE
+highlight DiffText ctermbg=26 ctermfg=231 guibg=#3a5fcd guifg=#ffffff
+
+" 浅色主题适配
+autocmd ColorScheme * if &background == 'light' | highlight Comment ctermfg=28 guifg=#008400 | endif
+autocmd ColorScheme * if &background == 'light' | highlight Search ctermbg=226 ctermfg=16 guibg=#ffff00 guifg=#000000 | endif
+autocmd ColorScheme * if &background == 'light' | highlight DiffAdd ctermbg=194 guibg=#d7ffd7 | endif
+autocmd ColorScheme * if &background == 'light' | highlight DiffDelete ctermbg=224 guibg=#ffd7d7 | endif
+autocmd ColorScheme * if &background == 'light' | highlight DiffChange ctermbg=189 guibg=#d7d7ff | endif
+autocmd ColorScheme * if &background == 'light' | highlight DiffText ctermbg=153 guifg=16 guibg=#afd7ff guifg=#000000 | endif
 " 搜索时忽略大小写
 set ignorecase
 " 智能大小写搜索

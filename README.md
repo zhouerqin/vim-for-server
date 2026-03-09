@@ -17,17 +17,17 @@
 ### Linux/macOS
 ```bash
 cd ~
-git clone https://github.com/zhouerqin/vim-for-server.git
-ln -s ~/vim-for-server/.vimrc ~/.vimrc
+git clone git@github.com:zhouerqin/vim-for-server.git
+ln -s ~/vim-for-server/vimrc ~/.vimrc
 ```
 
 ### Windows
 ```powershell
 # 克隆仓库到用户目录
-git clone https://github.com/zhouerqin/vim-for-server.git $env:USERPROFILE\vim-for-server
+git clone git@github.com:zhouerqin/vim-for-server.git $env:USERPROFILE\\vim-for-server
 # 创建符号链接或直接复制文件到vimfiles目录
 # 方法1：创建符号链接（需要管理员权限）
-New-Item -ItemType SymbolicLink -Path $env:USERPROFILE\vimfiles\vimrc -Target $env:USERPROFILE\vim-for-server\.vimrc
+New-Item -ItemType SymbolicLink -Path $env:USERPROFILE\\vimfiles\\vimrc -Target $env:USERPROFILE\\vim-for-server\\vimrc
 # 方法2：直接复制文件
-Copy-Item $env:USERPROFILE\vim-for-server\.vimrc $env:USERPROFILE\vimfiles\vimrc
+Copy-Item $env:USERPROFILE\\vim-for-server\\vimrc $env:USERPROFILE\\vimfiles\\vimrc
 ```
