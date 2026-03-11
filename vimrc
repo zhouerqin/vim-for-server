@@ -126,7 +126,7 @@ set laststatus=2
 highlight StatusLine   cterm=NONE ctermbg=236 ctermfg=white
 highlight StatusLineNC cterm=NONE ctermbg=235 ctermfg=gray
 highlight User1        cterm=bold ctermbg=148 ctermfg=black  " 模式区(绿)
-highlight User2        cterm=bold ctermbg=208 ctermfg=black  " 文件名(橙)
+highlight User2        cterm=bold ctermbg=240 ctermfg=white  " 文件名(深灰)
 highlight User3        cterm=bold ctermbg=239 ctermfg=white  " 位置信息
 highlight User4        cterm=bold ctermbg=81  ctermfg=black  " 文件类型(蓝)
 
