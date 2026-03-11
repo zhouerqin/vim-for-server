@@ -116,9 +116,43 @@ set noshowmode
 " 滚动时保持光标居中
 set scrolloff=8
 set sidescrolloff=8
-" 简化状态栏
+
+" ============================================
+" 状态栏美化
+" ============================================
 set laststatus=2
-set statusline=%F%m%r%h%w\ [TYPE=%Y]\ [LN=%l,COL=%v][%p%%]
+
+" 状态栏颜色定义
+highlight StatusLine   cterm=NONE ctermbg=236 ctermfg=white
+highlight StatusLineNC cterm=NONE ctermbg=235 ctermfg=gray
+highlight User1        cterm=bold ctermbg=148 ctermfg=black  " 模式区(绿)
+highlight User2        cterm=bold ctermbg=208 ctermfg=black  " 文件名(橙)
+highlight User3        cterm=bold ctermbg=239 ctermfg=white  " 位置信息
+highlight User4        cterm=bold ctermbg=81  ctermfg=black  " 文件类型(蓝)
+
+" 状态栏格式
+set statusline=
+set statusline+=%1*[%{ModeText()}]%*
+set statusline+=%2*\ %t\ %*
+set statusline+=%{&modified?\"+\":\"\"}
+set statusline+=%{&readonly?\"\":\"\"}
+set statusline+=%=
+set statusline+=%4*\ %{&filetype==\"\"?\"none\":&filetype}\ %*
+set statusline+=%3*\ %l:%v\ %*
+set statusline+=%3*\ %p%%\ %*
+
+" 模式文字
+function! ModeText()
+  let l:m = mode()
+  return get({'n':'N','i':'I','v':'V','V':'V-L','':'V-B','s':'S','S':'S-L','R':'R','c':'C'}, l:m, toupper(l:m))
+endfunction
+
+" 模式切换变色
+augroup StatusMode
+  autocmd!
+  autocmd InsertEnter * highlight User1 cterm=bold ctermbg=81  ctermfg=black
+  autocmd InsertLeave * highlight User1 cterm=bold ctermbg=148 ctermfg=black
+augroup END
 " 命令行高度
 set cmdheight=1
 " 禁用折叠
