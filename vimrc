@@ -122,36 +122,36 @@ set sidescrolloff=8
 " ============================================
 set laststatus=2
 
-" 状态栏颜色定义
-highlight StatusLine   cterm=NONE ctermbg=236 ctermfg=white
-highlight StatusLineNC cterm=NONE ctermbg=235 ctermfg=gray
-highlight User1        cterm=bold ctermbg=148 ctermfg=black  " 模式区(绿)
-highlight User2        cterm=bold ctermbg=240 ctermfg=white  " 文件名(深灰)
-highlight User3        cterm=bold ctermbg=239 ctermfg=white  " 位置信息
-highlight User4        cterm=bold ctermbg=81  ctermfg=black  " 文件类型(蓝)
+" 状态栏颜色定义 - 黑灰白单色调
+highlight StatusLine   cterm=NONE ctermbg=238 ctermfg=250
+highlight StatusLineNC cterm=NONE ctermbg=235 ctermfg=245
+highlight User1        cterm=bold ctermbg=245 ctermfg=232  " 模式(浅灰底黑字)
+highlight User2        cterm=NONE ctermbg=238 ctermfg=252  " 文件名(深灰底白字)
+highlight User3        cterm=NONE ctermbg=236 ctermfg=248  " 位置(最深灰)
+highlight User4        cterm=bold ctermbg=242 ctermfg=232  " 文件类型(中灰)
 
 " 状态栏格式
 set statusline=
-set statusline+=%1*[%{ModeText()}]%*
-set statusline+=%2*\ %t\ %*
+set statusline+=%1*\ %{ModeText()}\ %*
+set statusline+=%2*%t
 set statusline+=%{&modified?\"+\":\"\"}
 set statusline+=%{&readonly?\"\":\"\"}
+set statusline+=\ 
 set statusline+=%=
-set statusline+=%4*\ %{&filetype==\"\"?\"none\":&filetype}\ %*
-set statusline+=%3*\ %l:%v\ %*
-set statusline+=%3*\ %p%%\ %*
+set statusline+=%4*\ %{&filetype==\"\"?\"-\":&filetype}\ %*
+set statusline+=%3*\ %l:%v\ %p%%\ %*
 
 " 模式文字
 function! ModeText()
   let l:m = mode()
-  return get({'n':'N','i':'I','v':'V','V':'V-L','':'V-B','s':'S','S':'S-L','R':'R','c':'C'}, l:m, toupper(l:m))
+  return get({'n':'NORMAL','i':'INSERT','v':'VISUAL','V':'V-LINE','':'V-BLOCK','s':'SELECT','S':'S-LINE','R':'REPLACE','c':'COMMAND'}, l:m, toupper(l:m))
 endfunction
 
-" 模式切换变色
+" 模式切换变色 - 灰度变化
 augroup StatusMode
   autocmd!
-  autocmd InsertEnter * highlight User1 cterm=bold ctermbg=81  ctermfg=black
-  autocmd InsertLeave * highlight User1 cterm=bold ctermbg=148 ctermfg=black
+  autocmd InsertEnter * highlight User1 cterm=bold ctermbg=252 ctermfg=232
+  autocmd InsertLeave * highlight User1 cterm=bold ctermbg=245 ctermfg=232
 augroup END
 " 命令行高度
 set cmdheight=1
