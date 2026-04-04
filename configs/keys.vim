@@ -9,6 +9,10 @@ nnoremap <silent> <F1> :call ShowHelp()<CR>
 " F2 显示当前文件类型配置
 nnoremap <silent> <F2> :call ShowLangConfig()<CR>
 
+" F5 执行当前文件
+nnoremap <silent> <F5> :call RunScript()<CR>
+vnoremap <silent> <F5> :call RunSelectedCode()<CR>
+
 " 快速保存
 inoremap <C-s> <Esc>:w<CR>a
 nnoremap <C-s> :w<CR>
