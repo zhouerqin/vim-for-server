@@ -21,9 +21,6 @@ nnoremap <C-s> :w<CR>
 inoremap <C-q> <Esc>:q<CR>
 nnoremap <C-q> :q<CR>
 
-" 清除搜索高亮
-nnoremap <silent> <Esc> :noh<CR>
-
 " 快速行跳转
 nnoremap <Leader>G G
 nnoremap <Leader>gg gg
