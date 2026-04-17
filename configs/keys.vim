@@ -14,42 +14,42 @@ nnoremap <silent> <F5> :call RunScript()<CR>
 vnoremap <silent> <F5> :call RunSelectedCode()<CR>
 
 " 快速保存
-inoremap <C-s> <Esc>:w<CR>a
+" inoremap <C-s> <Esc>:w<CR>a
 nnoremap <C-s> :w<CR>
 
 " 快速退出
-inoremap <C-q> <Esc>:q<CR>
+" inoremap <C-q> <Esc>:q<CR>
 nnoremap <C-q> :q<CR>
 
 " 快速行跳转
-nnoremap <Leader>G G
-nnoremap <Leader>gg gg
+" nnoremap <Leader>G G
+" nnoremap <Leader>gg gg
 
 " 快速切换书签
-nnoremap <Leader>1 :1<CR>
-nnoremap <Leader>2 :50<CR>
-nnoremap <Leader>3 :100<CR>
+" nnoremap <Leader>1 :1<CR>
+" nnoremap <Leader>2 :50<CR>
+" nnoremap <Leader>3 :100<CR>
 
 " 快速复制当前行
-nnoremap <Leader>y yyp
+" nnoremap <Leader>y yyp
 
 " 快速删除当前行
-nnoremap <Leader>d dd
+" nnoremap <Leader>d dd
 
 " 窗口分屏快捷键
-nnoremap <Leader>v :vsplit<CR>
-nnoremap <Leader>h :split<CR>
+" nnoremap <Leader>v :vsplit<CR>
+" nnoremap <Leader>h :split<CR>
 
 " 快速切换到上一个窗口
-nnoremap <Leader>w <C-w>w
+" nnoremap <Leader>w <C-w>w
 
 " 标签页操作
-nnoremap <Leader>t :tabnew<CR>
-nnoremap <Leader>n :tabnext<CR>
-nnoremap <Leader>p :tabprevious<CR>
+" nnoremap <Leader>t :tabnew<CR>
+" nnoremap <Leader>n :tabnext<CR>
+" nnoremap <Leader>p :tabprevious<CR>
 
 " 格式化当前文件
-nnoremap <Leader>f :FormatFile<CR>
+" nnoremap <Leader>f :FormatFile<CR>
 
 " 清理行尾空格
-nnoremap <Leader>ws :CleanTrailingWhitespace<CR>
+" nnoremap <Leader>ws :CleanTrailingWhitespace<CR>
