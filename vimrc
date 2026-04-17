@@ -2,7 +2,7 @@
 " 模块化设计 - 假设配置文件位于 ~/.vim/
 " 使用相对路径.source
 
-let $VIMRC_DIR = $HOME . '/vim-for-server'
+let $VIMRC_DIR = $HOME . '/.vim'
 
 source $VIMRC_DIR/configs/base.vim
 source $VIMRC_DIR/configs/ui.vim
