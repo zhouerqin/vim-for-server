@@ -16,8 +16,7 @@
 
 ```bash
 cd ~
-git clone git@github.com:zhouerqin/vim-for-server.git
-ln -s ~/vim-for-server/vimrc ~/.vimrc
+git clone git@github.com:zhouerqin/vim-for-server.git .vim
 ```
 
 ### Windows
