@@ -22,8 +22,8 @@ nnoremap <C-s> :w<CR>
 nnoremap <C-q> :q<CR>
 
 " 快速行跳转
-" nnoremap <Leader>G G
-" nnoremap <Leader>gg gg
+nnoremap <Leader>G G
+nnoremap <Leader>gg gg
 
 " 快速切换书签
 " nnoremap <Leader>1 :1<CR>
