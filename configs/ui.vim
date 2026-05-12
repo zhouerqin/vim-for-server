@@ -35,12 +35,19 @@ highlight DiffChange ctermbg=17 ctermfg=NONE guibg=#1d2d4d guifg=NONE
 highlight DiffText ctermbg=26 ctermfg=231 guibg=#3a5fcd guifg=#ffffff
 
 " ----- 浅色主题适配 -----
-autocmd ColorScheme * if &background == 'light' | highlight Comment ctermfg=28 guifg=#008400 | endif
-autocmd ColorScheme * if &background == 'light' | highlight Search ctermbg=226 ctermfg=16 guibg=#ffff00 guifg=#000000 | endif
-autocmd ColorScheme * if &background == 'light' | highlight DiffAdd ctermbg=194 guibg=#d7ffd7 | endif
-autocmd ColorScheme * if &background == 'light' | highlight DiffDelete ctermbg=224 guibg=#ffd7d7 | endif
-autocmd ColorScheme * if &background == 'light' | highlight DiffChange ctermbg=189 guibg=#d7d7ff | endif
-autocmd ColorScheme * if &background == 'light' | highlight DiffText ctermbg=153 guifg=16 guibg=#afd7ff | endif
+augroup LightTheme
+  autocmd!
+  autocmd ColorScheme * if &background == 'light' | call s:ApplyLightTheme() | endif
+augroup END
+
+function! s:ApplyLightTheme()
+  highlight Comment ctermfg=28 guifg=#008400
+  highlight Search ctermbg=226 ctermfg=16 guibg=#ffff00 guifg=#000000
+  highlight DiffAdd ctermbg=194 guibg=#d7ffd7
+  highlight DiffDelete ctermbg=224 guibg=#ffd7d7
+  highlight DiffChange ctermbg=189 guibg=#d7d7ff
+  highlight DiffText ctermbg=153 guifg=16 guibg=#afd7ff
+endfunction
 
 " ----- 状态栏 -----
 set laststatus=2

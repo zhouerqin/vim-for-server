@@ -1,5 +1,17 @@
 " ====== 自动命令 ======
 
+" 文件类型到执行命令的映射
+let s:runner_map = {
+      \ 'sh': {'cmd': 'bash', 'arg': ''},
+      \ 'bash': {'cmd': 'bash', 'arg': ''},
+      \ 'python': {'cmd': 'python3', 'arg': '-c'},
+      \ 'ruby': {'cmd': 'ruby', 'arg': '-e'},
+      \ 'lua': {'cmd': 'lua', 'arg': ''},
+      \ 'javascript': {'cmd': 'node', 'arg': '-e'},
+      \ 'go': {'cmd': 'go run', 'arg': ''},
+      \ 'perl': {'cmd': 'perl', 'arg': '-e'}
+      \ }
+
 " 手动格式化命令
 command! CleanTrailingWhitespace :%s/\s\+$//e
 command! RetabAll :retab
@@ -15,62 +27,33 @@ endfunction
 
 function! RunScript()
     let filetype = &filetype
-    let cmd = ''
-    
-    if filetype == 'sh' || filetype == 'bash'
-        let cmd = 'bash ' . shellescape(expand('%'))
-    elseif filetype == 'python'
-        let cmd = 'python3 ' . shellescape(expand('%'))
-    elseif filetype == 'ruby'
-        let cmd = 'ruby ' . shellescape(expand('%'))
-    elseif filetype == 'lua'
-        let cmd = 'lua ' . shellescape(expand('%'))
-    elseif filetype == 'javascript'
-        let cmd = 'node ' . shellescape(expand('%'))
-    elseif filetype == 'go'
-        let cmd = 'go run ' . shellescape(expand('%'))
-    elseif filetype == 'perl'
-        let cmd = 'perl ' . shellescape(expand('%'))
-    else
+    if !has_key(s:runner_map, filetype)
         echo '不支持的文件类型: ' . filetype
         return
     endif
-    
-    if cmd != ''
-        echo '执行: ' . cmd
-        execute '!' . cmd
-    endif
+    let runner = s:runner_map[filetype]
+    let cmd = runner.cmd . ' ' . shellescape(expand('%'))
+    echo '执行: ' . cmd
+    execute '!' . cmd
 endfunction
 
 function! RunSelectedCode()
     let filetype = &filetype
     let selected = s:get_visual_selection()
-    
-    if empty(selected)
+    if empty(selected) || !has_key(s:runner_map, filetype)
+        if !has_key(s:runner_map, filetype)
+            echo '不支持的文件类型: ' . filetype
+        endif
         return
     endif
-    
-    let cmd = ''
-    
-    if filetype == 'python'
-        let cmd = 'python3 -c ' . shellescape(selected)
-    elseif filetype == 'javascript'
-        let cmd = 'node -e ' . shellescape(selected)
-    elseif filetype == 'sh' || filetype == 'bash'
-        let cmd = 'bash -c ' . shellescape(selected)
-    elseif filetype == 'ruby'
-        let cmd = 'ruby -e ' . shellescape(selected)
-    elseif filetype == 'perl'
-        let cmd = 'perl -e ' . shellescape(selected)
-    else
-        echo '不支持的文件类型: ' . filetype
-        return
+    let runner = s:runner_map[filetype]
+    let cmd = runner.cmd
+    if runner.arg != ''
+        let cmd .= ' ' . runner.arg
     endif
-    
-    if cmd != ''
-        echo '执行选中代码...'
-        execute '!' . cmd
-    endif
+    let cmd .= ' ' . shellescape(selected)
+    echo '执行选中代码...'
+    execute '!' . cmd
 endfunction
 
 function! s:get_visual_selection()

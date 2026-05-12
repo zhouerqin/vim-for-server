@@ -2,21 +2,24 @@
 " 模块化设计 - 假设配置文件位于 ~/.vim/
 " 使用相对路径.source
 
-let $VIMRC_DIR = $HOME . '/.vim'
+" 尝试多种方式获取配置目录
+if exists('$VIMRC_DIR')
+  let s:vimrc_dir = $VIMRC_DIR
+else
+  " 先尝试标准位置 ~/.vim
+  let s:vimrc_dir = $HOME . '/.vim'
+  if !isdirectory(s:vimrc_dir . '/configs')
+    " 如果不存在，尝试当前脚本所在目录（使用 <sfile>）
+    let s:script_path = expand('&lt;sfile&gt;')
+    if s:script_path != ''
+      let s:vimrc_dir = fnamemodify(s:script_path, ':h')
+    endif
+  endif
+endif
 
-source $VIMRC_DIR/configs/base.vim
-source $VIMRC_DIR/configs/ui.vim
-source $VIMRC_DIR/configs/keys.vim
+execute 'source ' . s:vimrc_dir . '/configs/base.vim'
+execute 'source ' . s:vimrc_dir . '/configs/ui.vim'
+execute 'source ' . s:vimrc_dir . '/configs/keys.vim'
 
-source $VIMRC_DIR/configs/filetypes/sh.vim
-source $VIMRC_DIR/configs/filetypes/python.vim
-source $VIMRC_DIR/configs/filetypes/yaml.vim
-source $VIMRC_DIR/configs/filetypes/dockerfile.vim
-source $VIMRC_DIR/configs/filetypes/go.vim
-source $VIMRC_DIR/configs/filetypes/json.vim
-source $VIMRC_DIR/configs/filetypes/markdown.vim
-source $VIMRC_DIR/configs/filetypes/nginx.vim
-source $VIMRC_DIR/configs/filetypes/mixed.vim
-
-source $VIMRC_DIR/autoload/auto.vim
-source $VIMRC_DIR/autoload/help.vim
+execute 'source ' . s:vimrc_dir . '/autoload/auto.vim'
+execute 'source ' . s:vimrc_dir . '/autoload/help.vim'
