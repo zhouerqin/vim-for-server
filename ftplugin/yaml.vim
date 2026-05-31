@@ -8,4 +8,4 @@ autocmd FileType yaml setlocal softtabstop=2
 autocmd FileType yaml setlocal expandtab
 autocmd FileType yaml setlocal textwidth=80
 autocmd FileType yaml setlocal commentstring=#\ %s
-autocmd FileType yaml set list
+autocmd FileType yaml setlocal list

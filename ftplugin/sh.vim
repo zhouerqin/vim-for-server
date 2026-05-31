@@ -10,7 +10,7 @@ autocmd FileType sh setlocal textwidth=80
 autocmd FileType sh setlocal formatoptions-=t
 autocmd FileType sh setlocal iskeyword+=@,-,_
 autocmd FileType sh setlocal commentstring=#\ %s
-autocmd FileType sh set list
+autocmd FileType sh setlocal list
 
 autocmd BufNewFile *.sh call append(0, ['#!/bin/bash', '', ''])
 

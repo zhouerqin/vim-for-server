@@ -9,7 +9,7 @@ autocmd FileType python setlocal expandtab
 autocmd FileType python setlocal textwidth=79
 autocmd FileType python setlocal colorcolumn=80
 autocmd FileType python setlocal commentstring=#\ %s
-autocmd FileType python set list
+autocmd FileType python setlocal list
 
 autocmd BufNewFile *.py call append(0, ['#!/usr/bin/env python3', '', ''])
 
