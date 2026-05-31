@@ -15,7 +15,6 @@ function! ShowHelp()
     \ '【快捷键 - 通用】',
     \ '  <Leader>w         保存文件',
     \ '  <Leader>q         退出Vim',
-    \ '  <Esc>             清除搜索高亮',
     \ '',
     \ '【快捷键 - 光标移动】',
     \ '  <Leader>g         跳转到文件末尾',
