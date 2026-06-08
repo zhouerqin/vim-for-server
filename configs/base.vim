@@ -39,3 +39,6 @@ set autoread
 set mouse=
 
 set t_Co=256
+
+set modeline
+set modelines=5
