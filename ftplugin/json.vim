@@ -1,7 +1,5 @@
 " ====== JSON配置 ======
 
-autocmd BufNewFile,BufRead *.json set filetype=json
-
 autocmd FileType json setlocal tabstop=2
 autocmd FileType json setlocal shiftwidth=2
 autocmd FileType json setlocal softtabstop=2

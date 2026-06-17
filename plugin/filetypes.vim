@@ -57,6 +57,33 @@ augroup FileTypeOverrides
   autocmd FileType hcl setlocal softtabstop=2
   autocmd FileType hcl setlocal expandtab
 
+  " ----- YAML -----
+  autocmd BufNewFile,BufRead *.yaml,*.yml set filetype=yaml
+
+  " ----- Nginx -----
+  autocmd BufNewFile,BufRead *.conf if expand('%') =~ 'nginx' | set filetype=nginx | endif
+
+  " ----- Dockerfile -----
+  autocmd BufNewFile,BufRead Dockerfile,*.dockerfile set filetype=dockerfile
+
   " ----- Tomcat日志 -----
   autocmd BufNewFile,BufRead *.log setlocal foldmethod=expr
+
+  " ----- Go -----
+  autocmd BufNewFile,BufRead *.go set filetype=go
+
+  " ----- JSON -----
+  autocmd BufNewFile,BufRead *.json set filetype=json
+
+  " ----- Markdown -----
+  autocmd BufNewFile,BufRead *.md,*.markdown set filetype=markdown
+
+  " ----- Shell -----
+  autocmd BufNewFile,BufRead *.sh set filetype=sh
+  autocmd BufNewFile *.sh call append(0, ['#!/bin/bash', '', ''])
+
+  " ----- Python -----
+  autocmd BufNewFile,BufRead *.py set filetype=python
+  autocmd BufNewFile *.py call append(0, ['#!/usr/bin/env python3', '', ''])
+
 augroup END
