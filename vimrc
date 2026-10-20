@@ -277,60 +277,57 @@ endfunction
 
 augroup FiletypeSettings
   autocmd!
+  " 规则：runtime 已给正确值的选项不重复定义（commentstring 等），只补充/覆盖
+  " 与社区实践冲突的部分。runtime 的 tab=8/不转空格是几十年前的约定，一律以
+  " 各语言社区规范为准（见下方逐条）。为统一口径，缩进选项总是显式设定，
+  " 不依赖 runtime 的既有值，便于审计。
 
-  " Shell：排障主力，函数名/测试运算符参与关键词搜索
+  " Shell：Google Shell Style Guide 用 2 空格；排障时常搜函数名/测试运算符
   autocmd FileType sh setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ textwidth=80 formatoptions-=t iskeyword+=@,-,_ commentstring=#\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< formatoptions< iskeyword< commentstring<')
+        \ textwidth=80 formatoptions-=t iskeyword+=@,-,_
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< formatoptions< iskeyword<')
 
-  " Python：PEP8 缩进，80 列颜色列提示
+  " Python：PEP8 = 4 空格 + 79 列，80 列处给颜色列提示
   autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-        \ textwidth=79 colorcolumn=80 commentstring=#\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< colorcolumn< commentstring<')
+        \ textwidth=79 colorcolumn=80
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< colorcolumn<')
 
-  " YAML：k8s/CI 配置主力
+  " YAML：社区惯例 2 空格（k8s/CI 配置主力）；runtime 漏设 ts，一并补上
   autocmd FileType yaml setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ textwidth=80 commentstring=#\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+        \ textwidth=80
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth<')
 
-  " JSON
+  " JSON：社区惯例 2 空格；注释前缀交还 runtime（JSON 标准无注释，runtime 设为空）
   autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ textwidth=0 colorcolumn=0 commentstring=//\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< colorcolumn< commentstring<')
+        \ textwidth=0
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth<')
 
-  " Markdown：写变更单/排障记录
-  autocmd FileType markdown setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ textwidth=0 commentstring=<!--\ %s\ -->
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+  " Markdown：不参与代码缩进，交还 runtime 的 4 空格；长段落不自动折行
+  autocmd FileType markdown setlocal textwidth=0
+        \ | call s:UndoAdd('setlocal textwidth<')
 
-  " Nginx
-  autocmd FileType nginx setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ textwidth=80 commentstring=#\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+  " Nginx：社区无权威缩进规范，沿用主机全局偏好，不强制覆盖；不设行宽
+  autocmd FileType nginx setlocal textwidth=0
+        \ | call s:UndoAdd('setlocal textwidth<')
 
-  " Dockerfile
-  autocmd FileType dockerfile setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ textwidth=80 commentstring=#\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+  " Dockerfile：社区惯例 4 空格、不折行
+  autocmd FileType dockerfile setlocal textwidth=0
+        \ | call s:UndoAdd('setlocal textwidth<')
 
-  " Go：gofmt 官方约定是 tab 缩进，用空格会被整个文件重排
+  " Go：gofmt 强制 tab 缩进，用空格会被整个文件重排
   autocmd FileType go setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
-        \ textwidth=80 colorcolumn=80 commentstring=//\ %s
-        \ | call s:UndoAdd('setlocal expandtab< tabstop< shiftwidth< softtabstop< textwidth< colorcolumn< commentstring<')
+        \ textwidth=80 colorcolumn=80
+        \ | call s:UndoAdd('setlocal expandtab< tabstop< shiftwidth< softtabstop< textwidth< colorcolumn<')
 
-  " Makefile：语法强制 recipe 行必须是 tab，空格会导致 make 直接报错
-  autocmd FileType make setlocal noexpandtab
-        \ | call s:UndoAdd('setlocal expandtab<')
+  " Makefile：runtime 已保证 noexpandtab（recipe 行必须是 tab，空格会报错），不重复定义
 
-  " SQL
-  autocmd FileType sql setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ commentstring=--\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< commentstring<')
+  " SQL：缩进交还主机全局；注释前缀由 runtime 按方言处理（默认 /* */）
+  autocmd FileType sql setlocal textwidth=80
+        \ | call s:UndoAdd('setlocal textwidth<')
 
-  " Terraform/HCL
+  " Terraform/HCL：官方 fmt 用 2 空格（terraform fmt 默认）；注释前缀交还 runtime
   autocmd FileType hcl setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-        \ commentstring=#\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< commentstring<')
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab<')
 
   " 兼容旧版 Vim：补足原生检测（新版 Vim 已内置这些规则）
   autocmd BufNewFile,BufRead Dockerfile,*.dockerfile set filetype=dockerfile

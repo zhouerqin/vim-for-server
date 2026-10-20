@@ -52,22 +52,18 @@ scp vimrc <host>:~/.vimrc
 
 ## 支持的文件类型
 
-| 类型 | Tab 宽 | 行宽 | 说明 |
-|------|--------|------|------|
 | （全局默认） | 4 | - | `expandtab`，修正 Vim 默认 tab 宽 8/不转空格 |
-| Shell | 2 | 80 | 新文件自动 shebang；可 F5 运行 |
-| Python | 4 | 79 | 80 列颜色列提示；新文件自动 shebang；可 F5 运行 |
-| YAML | 2 | 80 | k8s/CI 配置 |
-| JSON | 2 | - | |
-| Markdown | 2 | - | 变更单/排障记录 |
-| Nginx | 2 | 80 | 识别文件名含 nginx 的 `.conf` |
-| Dockerfile | 2 | 80 | |
+| Shell | 2 | 80 | Google Shell Style Guide；新文件自动 shebang；可 F5 运行 |
+| Python | 4 | 79 | PEP8；80 列颜色列提示；新文件自动 shebang；可 F5 运行 |
+| YAML | 2 | 80 | 社区惯例；k8s/CI 配置 |
+| JSON | 2 | - | 社区惯例 |
+| Markdown | runtime | - | 交还 runtime（4 空格） |
+| Nginx | 全局 | - | 社区无权威缩进规范，不强制 |
+| Dockerfile | 全局 | - | 无权威规范 |
 | Go | 4 | 80 | **tab 缩进**（gofmt 约定）；80 列颜色列提示；可 F5 运行整个文件 |
-| Makefile | tab | - | **tab 缩进**（语法强制，空格会报错） |
-| SQL | 2 | - | |
-| Terraform/HCL | 2 | - | |
-| 日志（`*.log`） | - | - | 自动关行号 |
-| 大文件（>1MB） | - | - | 自动禁用 swap/undo 文件 |
+| Makefile | tab | - | runtime 保证 tab（语法强制，空格会报错） |
+| SQL | 全局 | 80 | 注释前缀按方言由 runtime 处理 |
+| Terraform/HCL | 2 | - | `terraform fmt` 默认 |
 
 ## 注意事项
 
@@ -82,8 +78,8 @@ scp vimrc <host>:~/.vimrc
 1. **修正偏差，不堆砌配置**
    Vim 默认值停留在两个时代之前：编码规范出现之前（tab 宽 8、不转空格）和深色终端普及之前（搜索高亮、注释对比度差）。本配置的每一行都必须回答：你在修正默认值与现代规范或可读性的**什么偏差**？答不上来的行就不该存在。
 
-2. **缩进跟主流规范走**
-   全局默认 `expandtab` + 4 空格；各语言按主流规范覆盖（Python 4 空格、sh/yaml/json 2 空格等）；语法强制 tab 的场景（Go 的 gofmt、Makefile）显式保护，不盲从"全空格"。
+2. **缩进跟主流规范走，runtime 冲突时以规范为准**
+   全局默认 `expandtab` + 4 空格；各语言覆盖：Python 4（PEP8）、sh 2（Google Shell Style Guide）、yaml/json 2（社区惯例）、Go 用 tab（gofmt）、HCL 2（`terraform fmt`）。runtime 自带的 tab 宽 8 / 不转空格是几十年前的约定，与上述规范冲突时以社区规范为准。runtime 已给正确值的项（`commentstring`、make 的 `noexpandtab`）不重复定义，避免与官方 ftplugin 相互覆盖。
 
 3. **配色默认优先，只修看不清的**
    能用 Vim 自带配色和终端调色板，就不自定义。取舍不靠猜测：每组都用 `vim --clean` + pty 渲染实测，只覆盖默认在 256 色深色终端下**确实不可读**的项。实测后仅剩两处覆盖——注释（默认暗蓝 cf=4，深色下不可见）与当前行（默认下划线在多数终端不可靠）。搜索默认亮黄底、vimdiff 默认马卡龙底色均清晰可分辨，全部交还默认；语法高亮组和 `Normal` 背景同样不覆盖，背景由终端决定，深浅色主题都能用。
