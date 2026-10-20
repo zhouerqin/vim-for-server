@@ -34,6 +34,12 @@ set backspace=indent,eol,start
 set autoindent
 set showmatch
 
+" 全局缩进默认值：修正 Vim 默认 tab 宽 8、不转空格（编码规范出现之前的产物）
+" 各语言在下方 FileType 段按主流规范覆盖；语法强制 tab 的场景（Go/Makefile）显式保护
+set expandtab
+set tabstop=4
+set shiftwidth=4
+
 set listchars=tab:→\ ,trail:·,nbsp:␣
 
 set ignorecase
@@ -46,7 +52,6 @@ set wildmode=longest:full,full
 set history=1000
 set hidden
 set updatetime=300
-set noshowmode
 set scrolloff=8
 set sidescrolloff=8
 set cmdheight=1
@@ -60,81 +65,29 @@ set mouse=
 set modeline
 set modelines=5
 
-" ====== UI / 高亮 ======
-set laststatus=2
+" ====== 高亮 ======
+" 配色原则：默认优先，只覆盖 Vim 自带配色在 256 色深色终端下确实不可读的部分。
+" 语法高亮组（Keyword/String/Function 等）一律交还默认；Normal 也不覆盖，
+" 背景色由终端决定，深浅色主题都能用。vimdiff 的 Diff 四色必须自定义——
+" 默认配色在深色终端下增删改难以分辨（见设计原则第 4 条）。
 
-highlight Normal         ctermfg=252 ctermbg=234 guifg=#d4d4d4 guibg=#1e1e1e
-highlight CursorLine     cterm=NONE  ctermbg=236 guibg=#2d2d2d
-highlight ColorColumn    ctermbg=235 guibg=#333333
-highlight Visual         cterm=NONE  ctermbg=239 guibg=#4e4e4e
+" 搜索高亮：默认 reverse 在深色背景下常与文字混在一起
 highlight Search         ctermfg=16  ctermbg=214 guifg=#000000 guibg=#ffaf00
 highlight IncSearch      ctermfg=231 ctermbg=202 guifg=#ffffff guibg=#ff5f00
-highlight MatchParen     cterm=bold  ctermbg=239 ctermfg=231 gui=bold guibg=#4e4e4e guifg=#ffffff
-highlight LineNr         ctermfg=244 guifg=#666666
-highlight CursorLineNr   ctermfg=214 guifg=#ffaf00
 
+" 注释：默认灰暗，深色终端下接近不可见
 highlight Comment        ctermfg=108 guifg=#608060
-highlight String         ctermfg=180 guifg=#d4c49a
-highlight Number         ctermfg=167 guifg=#d75f5f
-highlight Boolean        ctermfg=167 guifg=#d75f5f
-highlight Constant       ctermfg=167 guifg=#d75f5f
-highlight Debug          ctermfg=167 guifg=#d75f5f
-highlight Keyword        ctermfg=140 guifg=#af87d7
-highlight Type           ctermfg=140 guifg=#af87d7
-highlight Structure      ctermfg=140 guifg=#af87d7
-highlight Function       ctermfg=117 guifg=#87d7ff
-highlight PreProc        ctermfg=117 guifg=#87d7ff
-highlight Include        ctermfg=117 guifg=#87d7ff
-highlight Define         ctermfg=117 guifg=#87d7ff
-highlight Underlined     ctermfg=117 cterm=underline guifg=#87d7ff gui=underline
-highlight Operator       ctermfg=252 guifg=#d4d4d4
-highlight Title          ctermfg=214 guifg=#ffaf00
-highlight Label          ctermfg=180 guifg=#d4c49a
-highlight Special        ctermfg=117 guifg=#87d7ff
-highlight SpecialKey     ctermfg=244 guifg=#666666
-highlight Ignore         ctermfg=244 guifg=#666666
 
+" 当前行 / 颜色列 / 错误：扫日志、对齐检查、错误定位的视觉锚点
+highlight CursorLine     cterm=NONE  ctermbg=236 guibg=#2d2d2d
+highlight ColorColumn    ctermbg=235 guibg=#333333
 highlight Error          ctermfg=231 ctermbg=196 guifg=#ffffff guibg=#ff0000
-highlight ErrorMsg       ctermfg=196 guifg=#ff0000
-highlight WarningMsg     ctermfg=214 guifg=#ffaf00
-highlight Todo           ctermfg=214 ctermbg=238 guifg=#ffaf00 guibg=#333333
 
-highlight VertSplit      ctermfg=238 ctermbg=238 guifg=#333333 guibg=#333333
-
+" vimdiff：增/删/改/改中之改，深色终端下必须可分辨
 highlight DiffAdd        ctermbg=22 guibg=#1d421d
 highlight DiffDelete     ctermbg=52 guibg=#421d1d
 highlight DiffChange     ctermbg=17 guibg=#1d2d4d
 highlight DiffText       ctermbg=26 ctermfg=231 guibg=#3a5fcd guifg=#ffffff
-
-highlight StatusLine     cterm=NONE ctermbg=238 ctermfg=250 guibg=#333333 guifg=#fafafa
-highlight StatusLineNC   cterm=NONE ctermbg=235 ctermfg=245 guibg=#262626 guifg=#f5f5f5
-highlight User1          cterm=bold ctermbg=245 ctermfg=232
-highlight User2          cterm=NONE ctermbg=238 ctermfg=252
-highlight User3          cterm=NONE ctermbg=236 ctermfg=248
-highlight User5          cterm=NONE ctermbg=235 ctermfg=249
-
-set statusline=
-set statusline+=%1*\ %{ModeText()}\ %*
-set statusline+=%2*%t
-set statusline+=%{&modified?\"+\":\"\"}
-set statusline+=%{&readonly?\"\":\"\"}
-set statusline+=\ 
-set statusline+=%=
-set statusline+=%5*\ %{&filetype==\"\"?\"-\":&filetype}\ %*
-set statusline+=%3*\ %l:%v\ %p%%\ %*
-
-function! ModeText() abort
-  let l:m = mode()
-  return get({'n': 'NORMAL', 'i': 'INSERT', 'v': 'VISUAL', 'V': 'V-LINE',
-        \ '^V': 'V-BLOCK', 's': 'SELECT', 'S': 'S-LINE', 'R': 'REPLACE',
-        \ 'c': 'COMMAND'}, l:m, toupper(l:m))
-endfunction
-
-augroup StatusMode
-  autocmd!
-  autocmd InsertEnter * highlight User1 cterm=bold ctermbg=252 ctermfg=232
-  autocmd InsertLeave * highlight User1 cterm=bold ctermbg=245 ctermfg=232
-augroup END
 
 " ====== 按键 ======
 
@@ -151,7 +104,7 @@ vnoremap <silent> <F5> :call RunSelectedCode()<CR>
 nnoremap <C-s> :w<CR>
 nnoremap <C-q> :q<CR>
 
-" 行首 / 行尾跳转
+" 文件开头 / 末尾跳转
 nnoremap <Leader>G G
 nnoremap <Leader>gg gg
 
@@ -373,10 +326,14 @@ augroup FiletypeSettings
         \ textwidth=80 commentstring=#\ %s
         \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
 
-  " Go
-  autocmd FileType go setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+  " Go：gofmt 官方约定是 tab 缩进，用空格会被整个文件重排
+  autocmd FileType go setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
         \ textwidth=80 colorcolumn=80 commentstring=//\ %s
-        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< colorcolumn< commentstring<')
+        \ | call s:UndoAdd('setlocal expandtab< tabstop< shiftwidth< softtabstop< textwidth< colorcolumn< commentstring<')
+
+  " Makefile：语法强制 recipe 行必须是 tab，空格会导致 make 直接报错
+  autocmd FileType make setlocal noexpandtab
+        \ | call s:UndoAdd('setlocal expandtab<')
 
   " SQL
   autocmd FileType sql setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
