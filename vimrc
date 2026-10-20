@@ -18,7 +18,8 @@
 "   - 需要 256 色终端（TERM=xterm-256color / screen-256color 等），不额外适配更老的终端
 "   - <C-s> 在未执行 stty -ixon 的终端会触发流控冻结屏幕（按 <C-q> 解冻或执行 stty -ixon）
 "   - 已启用 modeline（modelines=5），请勿用本配置编辑来源不明的文件
-"   - F5 运行当前文件前会自动 :update（仅在有未保存修改时写盘）
+"   - F5 运行当前文件前会自动 :update（仅在有未保存修改时写盘）；
+"     可执行文件直接运行（尊重其 shebang），否则按 shebang / 文件类型选解释器
 "   - 打开 >1MB 的文件自动禁用 swap/undo 文件
 " ============================================================================
 
@@ -88,7 +89,8 @@ nnoremap <silent> <F1> :call ShowHelp()<CR>
 nnoremap <silent> <F2> :call ShowLangConfig()<CR>
 nnoremap <silent> <F3> :setlocal list!<CR>:echo '特殊字符显示：' . (&l:list ? '开启' : '关闭')<CR>
 
-" F5 运行当前文件；可视化模式运行选中代码
+" F5 运行当前文件（可执行则直接运行、否则按 shebang/文件类型用解释器）；
+" 可视化模式运行选中代码
 nnoremap <silent> <F5> :call RunScript()<CR>
 vnoremap <silent> <F5> :call RunSelectedCode()<CR>
 
@@ -132,6 +134,7 @@ function! FormatCurrentFile() abort
 endfunction
 
 " 可选执行器：inline_arg 为空表示不支持选中执行（如 go run 需要完整文件）
+" 优先级：可执行文件直接 ./file（尊重自身 shebang）> shebang 解析 > 按 ft 用解释器
 let s:runner_map = {
       \ 'sh':       {'cmd': 'bash',      'inline_arg': '-c'},
       \ 'bash':     {'cmd': 'bash',      'inline_arg': '-c'},
@@ -140,13 +143,31 @@ let s:runner_map = {
       \ 'javascript': {'cmd': 'node',    'inline_arg': '-e'},
       \ }
 
-function! RunScript() abort
-  let l:ft = &filetype
-  if !has_key(s:runner_map, l:ft)
-    echo '不支持的文件类型: ' . (l:ft == '' ? '(未识别)' : l:ft)
-    return
+" 从首行 shebang 提取解释器命令行，如：
+"   '#!/bin/bash'              -> 'bash'
+"   '#!/usr/bin/env python3'   -> 'python3'
+"   '#!/usr/bin/env -S python3 -u' -> 'python3 -u'
+"   '#!/usr/bin/perl -w'       -> 'perl -w'
+" 无法识别时返回空串。为可审计，只处理这两种最常见形式。
+function! s:ShebangCmd(path) abort
+  let l:line = get(readfile(a:path, '', 1), 0, '')
+  if l:line !~# '^#!\s*\S'
+    return ''
   endif
-  if !filereadable(expand('%'))
+  let l:parts = split(l:line[2:])
+  " env 形式：找出 env 选项后真正的解释器及其余参数
+  if fnamemodify(l:parts[0], ':t') ==# 'env'
+    let l:rest = filter(copy(l:parts[1:]), {_, v -> v !~# '^-'})
+    return join(map(l:rest, {_, v -> v =~# '^/' ? fnamemodify(v, ':t') : v}), ' ')
+  endif
+  " 普通形式：取路径 basename + 原参数（避免依赖绝对路径存在）
+  let l:parts[0] = fnamemodify(l:parts[0], ':t')
+  return join(l:parts, ' ')
+endfunction
+
+function! RunScript() abort
+  let l:file = expand('%')
+  if !filereadable(l:file)
     echo '文件尚未保存到磁盘，无法运行'
     return
   endif
@@ -154,9 +175,35 @@ function! RunScript() abort
   if &modified
     silent update
   endif
-  let l:cmd = s:runner_map[l:ft].cmd . ' ' . shellescape(expand('%'))
-  echo '执行: ' . l:cmd
-  execute '!' . l:cmd
+
+  " 1) 可执行文件：直接执行，尊重它自己的 shebang
+  if executable(l:file)
+    let l:cmd = shellescape(l:file)
+    echo '执行: ' . l:cmd
+    execute '!' . l:cmd
+    return
+  endif
+
+  " 2) 有 shebang 但不可执行：按 shebang 解释器运行（如 #!/usr/bin/env python3）
+  let l:sb = s:ShebangCmd(l:file)
+  if !empty(l:sb)
+    let l:cmd = l:sb . ' ' . shellescape(l:file)
+    echo '执行: ' . l:cmd
+    execute '!' . l:cmd
+    return
+  endif
+
+  " 3) 按文件类型用映射的解释器
+  let l:ft = &filetype
+  if has_key(s:runner_map, l:ft)
+    let l:cmd = s:runner_map[l:ft].cmd . ' ' . shellescape(l:file)
+    echo '执行: ' . l:cmd
+    execute '!' . l:cmd
+    return
+  endif
+
+  echo '无法执行：既不可执行、也无 shebang，且文件类型未识别'
+        \ . '（可 chmod +x 或改用 :! 手动运行）'
 endfunction
 
 function! RunSelectedCode() abort

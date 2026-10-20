@@ -28,7 +28,7 @@ scp vimrc <host>:~/.vimrc
 | `<F1>` | 显示帮助 |
 | `<F2>` | 显示当前文件类型配置 |
 | `<F3>` | 切换特殊字符显示（Tab→ 行尾空格·，仅当前缓冲区） |
-| `<F5>` | 运行当前文件（自动先保存）；可视化模式运行选中代码 |
+| `<F5>` | 运行当前文件：可执行则直接运行（用其 shebang），否则按 shebang / 文件类型选解释器；可视化模式运行选中代码 |
 | `<C-s>` | 保存 |
 | `<C-q>` | 退出 |
 | `<Leader>G` / `<Leader>gg` | 跳转到文件末尾 / 开头 |
@@ -44,7 +44,7 @@ scp vimrc <host>:~/.vimrc
 
 | 命令 | 功能 |
 |------|------|
-| `:RunScript` | 运行当前文件（同 F5），支持 sh/python/go/node |
+| `:RunScript` | 运行当前文件（同 F5）：优先直接执行，其次 shebang，最后按 ft（sh/python/go/node） |
 | `:FormatFile` | 格式化当前文件 |
 | `:CleanTrailingWhitespace` | 清理行尾空格 |
 | `:LangConfig` | 显示当前文件配置（同 F2） |
@@ -72,7 +72,7 @@ scp vimrc <host>:~/.vimrc
 - **需要 256 色终端**（`TERM=xterm-256color` 等），不额外适配更老的终端。
 - **`<C-s>` 流控**：未执行 `stty -ixon` 的终端里，`<C-s>` 会冻结屏幕（按 `<C-q>` 解冻）。建议在 `~/.bashrc` 中加 `stty -ixon`。
 - **modeline 已启用**（`modelines=5`）：请勿用本配置编辑来源不明的文件。
-- **`:RunScript` 运行的是磁盘内容**：有未保存修改时会自动先 `:update` 写盘。
+- **`:RunScript` / `<F5>` 运行的是磁盘内容**：有未保存修改时会自动先 `:update` 写盘。执行优先级：可执行文件直接运行（尊重其 shebang）→ 有 shebang 的文件按其解释器运行 → 按文件类型选解释器（sh/python/go/node）→ 都不满足则提示。
 - 高亮直接内嵌在 `vimrc` 中，没有独立的 colorscheme，`colorscheme server` 不可用。
 
 ## 设计原则
