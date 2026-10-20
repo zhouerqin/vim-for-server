@@ -66,28 +66,15 @@ set modeline
 set modelines=5
 
 " ====== 高亮 ======
-" 配色原则：默认优先，只覆盖 Vim 自带配色在 256 色深色终端下确实不可读的部分。
-" 语法高亮组（Keyword/String/Function 等）一律交还默认；Normal 也不覆盖，
-" 背景色由终端决定，深浅色主题都能用。vimdiff 的 Diff 四色必须自定义——
-" 默认配色在深色终端下增删改难以分辨（见设计原则第 4 条）。
+" 配色原则：默认优先。每组都用实测数据裁决（`vim --clean` + pty 渲染），只覆盖
+" 默认在 256 色深色终端下确实不可读的项。实测结论：Vim 9 的搜索默认亮黄底、
+" Diff 四色默认马卡龙底色，均清晰可分辨——全部交还默认（见设计原则第 3/4 条）。
 
-" 搜索高亮：默认 reverse 在深色背景下常与文字混在一起
-highlight Search         ctermfg=16  ctermbg=214 guifg=#000000 guibg=#ffaf00
-highlight IncSearch      ctermfg=231 ctermbg=202 guifg=#ffffff guibg=#ff5f00
+" 注释：默认 ctermfg=4（暗蓝），深色终端下接近不可见
+highlight Comment    ctermfg=108 guifg=#608060
 
-" 注释：默认灰暗，深色终端下接近不可见
-highlight Comment        ctermfg=108 guifg=#608060
-
-" 当前行 / 颜色列 / 错误：扫日志、对齐检查、错误定位的视觉锚点
-highlight CursorLine     cterm=NONE  ctermbg=236 guibg=#2d2d2d
-highlight ColorColumn    ctermbg=235 guibg=#333333
-highlight Error          ctermfg=231 ctermbg=196 guifg=#ffffff guibg=#ff0000
-
-" vimdiff：增/删/改/改中之改，深色终端下必须可分辨
-highlight DiffAdd        ctermbg=22 guibg=#1d421d
-highlight DiffDelete     ctermbg=52 guibg=#421d1d
-highlight DiffChange     ctermbg=17 guibg=#1d2d4d
-highlight DiffText       ctermbg=26 ctermfg=231 guibg=#3a5fcd guifg=#ffffff
+" 当前行：默认下划线在多数终端不可靠，改用低亮背景
+highlight CursorLine cterm=NONE ctermbg=236 guibg=#2d2d2d
 
 " ====== 按键 ======
 
