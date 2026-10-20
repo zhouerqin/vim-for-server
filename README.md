@@ -69,6 +69,7 @@ scp vimrc <host>:~/.vimrc
 
 ## 注意事项
 
+- **需要 256 色终端**（`TERM=xterm-256color` 等），不额外适配更老的终端。
 - **`<C-s>` 流控**：未执行 `stty -ixon` 的终端里，`<C-s>` 会冻结屏幕（按 `<C-q>` 解冻）。建议在 `~/.bashrc` 中加 `stty -ixon`。
 - **modeline 已启用**（`modelines=5`）：请勿用本配置编辑来源不明的文件。
 - **`:RunScript` 运行的是磁盘内容**：有未保存修改时会自动先 `:update` 写盘。

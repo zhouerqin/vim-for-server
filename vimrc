@@ -15,6 +15,7 @@
 "   确认 ~/.vim 内无个人文件后 rm -rf ~/.vim，再执行上面的 curl
 "
 " 注意事项：
+"   - 需要 256 色终端（TERM=xterm-256color / screen-256color 等），不额外适配更老的终端
 "   - <C-s> 在未执行 stty -ixon 的终端会触发流控冻结屏幕（按 <C-q> 解冻或执行 stty -ixon）
 "   - 已启用 modeline（modelines=5），请勿用本配置编辑来源不明的文件
 "   - F5 运行当前文件前会自动 :update（仅在有未保存修改时写盘）
@@ -98,8 +99,6 @@ highlight ErrorMsg       ctermfg=196 guifg=#ff0000
 highlight WarningMsg     ctermfg=214 guifg=#ffaf00
 highlight Todo           ctermfg=214 ctermbg=238 guifg=#ffaf00 guibg=#333333
 
-highlight Folded         ctermfg=244 ctermbg=236 guifg=#666666 guibg=#2d2d2d
-highlight FoldColumn     ctermfg=244 ctermbg=234 guifg=#666666 guibg=#1e1e1e
 highlight VertSplit      ctermfg=238 ctermbg=238 guifg=#333333 guibg=#333333
 
 highlight DiffAdd        ctermbg=22 guibg=#1d421d
