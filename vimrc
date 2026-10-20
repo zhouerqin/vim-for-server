@@ -1,25 +1,413 @@
-" ====== Vim配置入口 ======
-" 模块化设计 - 假设配置文件位于 ~/.vim/
-" 使用相对路径.source
+" ============================================================================
+" vim-for-server —— 专为生产服务器设计的 Vim 配置
+"
+" 零插件、单文件可逐行审计，断外网也能一条命令装好，
+" 按 F1 查快捷键，半小时排障完就走人。
+"
+" 安装（会直接覆盖 ~/.vimrc，已有配置请先备份）：
+"   curl -fsSL https://raw.githubusercontent.com/zhouerqin/vim-for-server/main/vimrc -o ~/.vimrc
+" 保守安装（先备份）：
+"   [ -f ~/.vimrc ] && cp ~/.vimrc ~/.vimrc.bak.$(date +%Y%m%d)
+"   curl -fsSL https://raw.githubusercontent.com/zhouerqin/vim-for-server/main/vimrc -o ~/.vimrc
+" 断外网机器：
+"   scp vimrc <host>:~/.vimrc
+" 旧版本（~/.vim 目录布局）迁移：
+"   确认 ~/.vim 内无个人文件后 rm -rf ~/.vim，再执行上面的 curl
+"
+" 注意事项：
+"   - <C-s> 在未执行 stty -ixon 的终端会触发流控冻结屏幕（按 <C-q> 解冻或执行 stty -ixon）
+"   - 已启用 modeline（modelines=5），请勿用本配置编辑来源不明的文件
+"   - F5 运行当前文件前会自动 :update（仅在有未保存修改时写盘）
+"   - 打开 >1MB 的文件自动禁用 swap/undo 文件
+" ============================================================================
 
-" 尝试多种方式获取配置目录
-if exists('$VIMRC_DIR')
-  let s:vimrc_dir = $VIMRC_DIR
-else
-  " 先尝试标准位置 ~/.vim
-  let s:vimrc_dir = $HOME . '/.vim'
-  if !isdirectory(s:vimrc_dir . '/configs')
-    " 如果不存在，尝试当前脚本所在目录（使用 <sfile>）
-    let s:script_path = expand('&lt;sfile&gt;')
-    if s:script_path != ''
-      let s:vimrc_dir = fnamemodify(s:script_path, ':h')
-    endif
+" ====== 基础选项 ======
+set nocompatible
+set encoding=utf-8
+set fileencoding=utf-8
+
+filetype plugin indent on
+syntax enable
+
+set backspace=indent,eol,start
+set autoindent
+set showmatch
+
+set listchars=tab:→\ ,trail:·,nbsp:␣
+
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+
+set wildmenu
+set wildmode=longest:full,full
+set history=1000
+set hidden
+set updatetime=300
+set noshowmode
+set scrolloff=8
+set sidescrolloff=8
+set cmdheight=1
+
+set nofoldenable
+set number
+set autoread
+set mouse=
+
+" 排障时编辑不可信文件（如下载的日志）存在 modeline 风险，见头部注意事项
+set modeline
+set modelines=5
+
+" ====== UI / 高亮 ======
+set laststatus=2
+
+highlight Normal         ctermfg=252 ctermbg=234 guifg=#d4d4d4 guibg=#1e1e1e
+highlight CursorLine     cterm=NONE  ctermbg=236 guibg=#2d2d2d
+highlight ColorColumn    ctermbg=235 guibg=#333333
+highlight Visual         cterm=NONE  ctermbg=239 guibg=#4e4e4e
+highlight Search         ctermfg=16  ctermbg=214 guifg=#000000 guibg=#ffaf00
+highlight IncSearch      ctermfg=231 ctermbg=202 guifg=#ffffff guibg=#ff5f00
+highlight MatchParen     cterm=bold  ctermbg=239 ctermfg=231 gui=bold guibg=#4e4e4e guifg=#ffffff
+highlight LineNr         ctermfg=244 guifg=#666666
+highlight CursorLineNr   ctermfg=214 guifg=#ffaf00
+
+highlight Comment        ctermfg=108 guifg=#608060
+highlight String         ctermfg=180 guifg=#d4c49a
+highlight Number         ctermfg=167 guifg=#d75f5f
+highlight Boolean        ctermfg=167 guifg=#d75f5f
+highlight Constant       ctermfg=167 guifg=#d75f5f
+highlight Debug          ctermfg=167 guifg=#d75f5f
+highlight Keyword        ctermfg=140 guifg=#af87d7
+highlight Type           ctermfg=140 guifg=#af87d7
+highlight Structure      ctermfg=140 guifg=#af87d7
+highlight Function       ctermfg=117 guifg=#87d7ff
+highlight PreProc        ctermfg=117 guifg=#87d7ff
+highlight Include        ctermfg=117 guifg=#87d7ff
+highlight Define         ctermfg=117 guifg=#87d7ff
+highlight Underlined     ctermfg=117 cterm=underline guifg=#87d7ff gui=underline
+highlight Operator       ctermfg=252 guifg=#d4d4d4
+highlight Title          ctermfg=214 guifg=#ffaf00
+highlight Label          ctermfg=180 guifg=#d4c49a
+highlight Special        ctermfg=117 guifg=#87d7ff
+highlight SpecialKey     ctermfg=244 guifg=#666666
+highlight Ignore         ctermfg=244 guifg=#666666
+
+highlight Error          ctermfg=231 ctermbg=196 guifg=#ffffff guibg=#ff0000
+highlight ErrorMsg       ctermfg=196 guifg=#ff0000
+highlight WarningMsg     ctermfg=214 guifg=#ffaf00
+highlight Todo           ctermfg=214 ctermbg=238 guifg=#ffaf00 guibg=#333333
+
+highlight Folded         ctermfg=244 ctermbg=236 guifg=#666666 guibg=#2d2d2d
+highlight FoldColumn     ctermfg=244 ctermbg=234 guifg=#666666 guibg=#1e1e1e
+highlight VertSplit      ctermfg=238 ctermbg=238 guifg=#333333 guibg=#333333
+
+highlight DiffAdd        ctermbg=22 guibg=#1d421d
+highlight DiffDelete     ctermbg=52 guibg=#421d1d
+highlight DiffChange     ctermbg=17 guibg=#1d2d4d
+highlight DiffText       ctermbg=26 ctermfg=231 guibg=#3a5fcd guifg=#ffffff
+
+highlight StatusLine     cterm=NONE ctermbg=238 ctermfg=250 guibg=#333333 guifg=#fafafa
+highlight StatusLineNC   cterm=NONE ctermbg=235 ctermfg=245 guibg=#262626 guifg=#f5f5f5
+highlight User1          cterm=bold ctermbg=245 ctermfg=232
+highlight User2          cterm=NONE ctermbg=238 ctermfg=252
+highlight User3          cterm=NONE ctermbg=236 ctermfg=248
+highlight User5          cterm=NONE ctermbg=235 ctermfg=249
+
+set statusline=
+set statusline+=%1*\ %{ModeText()}\ %*
+set statusline+=%2*%t
+set statusline+=%{&modified?\"+\":\"\"}
+set statusline+=%{&readonly?\"\":\"\"}
+set statusline+=\ 
+set statusline+=%=
+set statusline+=%5*\ %{&filetype==\"\"?\"-\":&filetype}\ %*
+set statusline+=%3*\ %l:%v\ %p%%\ %*
+
+function! ModeText() abort
+  let l:m = mode()
+  return get({'n': 'NORMAL', 'i': 'INSERT', 'v': 'VISUAL', 'V': 'V-LINE',
+        \ '^V': 'V-BLOCK', 's': 'SELECT', 'S': 'S-LINE', 'R': 'REPLACE',
+        \ 'c': 'COMMAND'}, l:m, toupper(l:m))
+endfunction
+
+augroup StatusMode
+  autocmd!
+  autocmd InsertEnter * highlight User1 cterm=bold ctermbg=252 ctermfg=232
+  autocmd InsertLeave * highlight User1 cterm=bold ctermbg=245 ctermfg=232
+augroup END
+
+" ====== 按键 ======
+
+" F1 帮助 / F2 当前文件配置 / F3 特殊字符显示（缓冲区级）
+nnoremap <silent> <F1> :call ShowHelp()<CR>
+nnoremap <silent> <F2> :call ShowLangConfig()<CR>
+nnoremap <silent> <F3> :setlocal list!<CR>:echo '特殊字符显示：' . (&l:list ? '开启' : '关闭')<CR>
+
+" F5 运行当前文件；可视化模式运行选中代码
+nnoremap <silent> <F5> :call RunScript()<CR>
+vnoremap <silent> <F5> :call RunSelectedCode()<CR>
+
+" 快速保存 / 退出（仅普通模式；终端流控风险见头部注意事项）
+nnoremap <C-s> :w<CR>
+nnoremap <C-q> :q<CR>
+
+" 行首 / 行尾跳转
+nnoremap <Leader>G G
+nnoremap <Leader>gg gg
+
+" 复制当前行到下一行
+nnoremap <Leader>y yyp
+
+" 窗口分屏 / 切换
+nnoremap <Leader>v :vsplit<CR>
+nnoremap <Leader>h :split<CR>
+nnoremap <Leader>w <C-w>w
+
+" 标签页
+nnoremap <Leader>t :tabnew<CR>
+nnoremap <Leader>n :tabnext<CR>
+nnoremap <Leader>p :tabprevious<CR>
+
+" 格式化 / 清理行尾空格
+nnoremap <Leader>f :FormatFile<CR>
+nnoremap <Leader>ws :CleanTrailingWhitespace<CR>
+
+" ====== 命令与函数 ======
+command! CleanTrailingWhitespace :%s/\s\+$//e
+command! FormatFile call FormatCurrentFile()
+command! RunScript call RunScript()
+command! VimHelp call ShowHelp()
+command! LangConfig call ShowLangConfig()
+
+function! FormatCurrentFile() abort
+  let l:save = getpos('.')
+  silent! %s/\s\+$//e
+  call setpos('.', l:save)
+  echo '清理行尾空格完成'
+endfunction
+
+" 可选执行器：inline_arg 为空表示不支持选中执行（如 go run 需要完整文件）
+let s:runner_map = {
+      \ 'sh':       {'cmd': 'bash',      'inline_arg': '-c'},
+      \ 'bash':     {'cmd': 'bash',      'inline_arg': '-c'},
+      \ 'python':   {'cmd': 'python3',   'inline_arg': '-c'},
+      \ 'go':       {'cmd': 'go run',    'inline_arg': ''},
+      \ 'javascript': {'cmd': 'node',    'inline_arg': '-e'},
+      \ }
+
+function! RunScript() abort
+  let l:ft = &filetype
+  if !has_key(s:runner_map, l:ft)
+    echo '不支持的文件类型: ' . (l:ft == '' ? '(未识别)' : l:ft)
+    return
   endif
-endif
+  if !filereadable(expand('%'))
+    echo '文件尚未保存到磁盘，无法运行'
+    return
+  endif
+  " 运行的是磁盘上的内容，先同步未保存的修改，避免跑旧代码
+  if &modified
+    silent update
+  endif
+  let l:cmd = s:runner_map[l:ft].cmd . ' ' . shellescape(expand('%'))
+  echo '执行: ' . l:cmd
+  execute '!' . l:cmd
+endfunction
 
-execute 'source ' . s:vimrc_dir . '/configs/base.vim'
-execute 'source ' . s:vimrc_dir . '/configs/ui.vim'
-execute 'source ' . s:vimrc_dir . '/configs/keys.vim'
+function! RunSelectedCode() abort
+  let l:ft = &filetype
+  if !has_key(s:runner_map, l:ft)
+    echo '不支持的文件类型: ' . (l:ft == '' ? '(未识别)' : l:ft)
+    return
+  endif
+  let l:runner = s:runner_map[l:ft]
+  if l:runner.inline_arg == ''
+    echo '不支持对该文件类型执行选中代码，请使用 :RunScript 运行整个文件'
+    return
+  endif
+  let l:selected = s:get_visual_selection()
+  if empty(l:selected)
+    echo '未选中任何代码'
+    return
+  endif
+  let l:cmd = l:runner.cmd . ' ' . l:runner.inline_arg . ' ' . shellescape(l:selected)
+  echo '执行选中代码...'
+  execute '!' . l:cmd
+endfunction
 
-execute 'source ' . s:vimrc_dir . '/autoload/auto.vim'
-execute 'source ' . s:vimrc_dir . '/autoload/help.vim'
+function! s:get_visual_selection() abort
+  let [l:lnum1, l:col1] = getpos("'<")[1:2]
+  let [l:lnum2, l:col2] = getpos("'>")[1:2]
+  let l:lines = getline(l:lnum1, l:lnum2)
+  if empty(l:lines)
+    return ''
+  endif
+  let l:lines[-1] = l:lines[-1][: l:col2 - 1]
+  let l:lines[0] = l:lines[0][l:col1 - 1:]
+  return join(l:lines, "\n")
+endfunction
+
+function! ShowHelp() abort
+  let l:help = [
+    \ '',
+    \ '═══════════════════════════════════════════════════════════',
+    \ '              vim-for-server 帮助（零插件 · 单文件）',
+    \ '═══════════════════════════════════════════════════════════',
+    \ '',
+    \ '【功能键】',
+    \ '  <F1>              显示帮助（本界面）',
+    \ '  <F2>              显示当前文件类型配置',
+    \ '  <F3>              切换特殊字符显示（Tab→ 行尾空格·，仅当前缓冲区）',
+    \ '  <F5>              运行当前文件（自动先保存）；可视化模式运行选中代码',
+    \ '',
+    \ '【快捷键 - 通用】',
+    \ '  <C-s>             保存（终端需 stty -ixon，否则可能冻结屏幕）',
+    \ '  <C-q>             退出',
+    \ '',
+    \ '【快捷键 - 移动】',
+    \ '  <Leader>G         跳转到文件末尾',
+    \ '  <Leader>gg        跳转到文件开头',
+    \ '',
+    \ '【快捷键 - 编辑】',
+    \ '  <Leader>y         复制当前行到下一行',
+    \ '  <Leader>f         格式化当前文件（清理行尾空格）',
+    \ '  <Leader>ws        清理行尾空格',
+    \ '',
+    \ '【快捷键 - 窗口/标签】',
+    \ '  <Leader>v / <Leader>h    垂直 / 水平分屏',
+    \ '  <Leader>w         切换到上一个窗口',
+    \ '  <Leader>t         新建标签页',
+    \ '  <Leader>n / <Leader>p    下一个 / 上一个标签页',
+    \ '',
+    \ '【命令】',
+    \ '  :RunScript        运行当前文件（同 F5）',
+    \ '  :FormatFile       格式化当前文件',
+    \ '  :CleanTrailingWhitespace  清理行尾空格',
+    \ '  :LangConfig       显示当前文件配置（同 F2）',
+    \ '  :VimHelp          显示帮助（同 F1）',
+    \ '',
+    \ '═══════════════════════════════════════════════════════════',
+    \ ]
+  for l:line in l:help
+    echohl Title
+    echo l:line
+    echohl None
+  endfor
+endfunction
+
+function! ShowLangConfig() abort
+  let l:ft = &filetype
+  if l:ft == ''
+    echo '文件类型: 未识别'
+    return
+  endif
+  let l:info = [
+    \ '',
+    \ '═══════════════════════════════════════════════════════════',
+    \ '                    当前文件类型配置',
+    \ '═══════════════════════════════════════════════════════════',
+    \ '',
+    \ '文件类型: ' . l:ft,
+    \ 'Tab宽度: ' . &tabstop,
+    \ '缩进宽度: ' . &shiftwidth,
+    \ '软Tab宽度: ' . &softtabstop,
+    \ '扩展Tab: ' . (&expandtab ? '是' : '否'),
+    \ '行宽限制: ' . (&textwidth > 0 ? &textwidth : '无限制'),
+    \ '颜色列: ' . (&colorcolumn != '' ? &colorcolumn : '无'),
+    \ '注释前缀: ' . &commentstring,
+    \ '',
+    \ '═══════════════════════════════════════════════════════════',
+    \ ]
+  for l:line in l:info
+    echohl Title
+    echo l:line
+    echohl None
+  endfor
+endfunction
+
+" ====== 文件类型设置 ======
+" 单文件模式下无法使用 ftplugin/ 目录，统一用 FileType autocmd 实现。
+" 每个 autocmd 必须同步追加 b:undo_ftplugin，否则同一缓冲区切换文件类型时
+" 设置会残留（已实测验证）。
+
+" 追加 b:undo_ftplugin（runtime 的 ftplugin 也会设置该变量，必须追加而非覆盖）
+function! s:UndoAdd(cmd) abort
+  let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . a:cmd
+endfunction
+
+augroup FiletypeSettings
+  autocmd!
+
+  " Shell：排障主力，函数名/测试运算符参与关键词搜索
+  autocmd FileType sh setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ textwidth=80 formatoptions-=t iskeyword+=@,-,_ commentstring=#\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< formatoptions< iskeyword< commentstring<')
+
+  " Python：PEP8 缩进，80 列颜色列提示
+  autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+        \ textwidth=79 colorcolumn=80 commentstring=#\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< colorcolumn< commentstring<')
+
+  " YAML：k8s/CI 配置主力
+  autocmd FileType yaml setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ textwidth=80 commentstring=#\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+
+  " JSON
+  autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ textwidth=0 colorcolumn=0 commentstring=//\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< colorcolumn< commentstring<')
+
+  " Markdown：写变更单/排障记录
+  autocmd FileType markdown setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ textwidth=0 commentstring=<!--\ %s\ -->
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+
+  " Nginx
+  autocmd FileType nginx setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ textwidth=80 commentstring=#\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+
+  " Dockerfile
+  autocmd FileType dockerfile setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ textwidth=80 commentstring=#\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< commentstring<')
+
+  " Go
+  autocmd FileType go setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ textwidth=80 colorcolumn=80 commentstring=//\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< colorcolumn< commentstring<')
+
+  " SQL
+  autocmd FileType sql setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ commentstring=--\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< commentstring<')
+
+  " Terraform/HCL
+  autocmd FileType hcl setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+        \ commentstring=#\ %s
+        \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< commentstring<')
+
+  " 兼容旧版 Vim：补足原生检测（新版 Vim 已内置这些规则）
+  autocmd BufNewFile,BufRead Dockerfile,*.dockerfile set filetype=dockerfile
+  autocmd BufNewFile,BufRead *.tf,*.tfvars set filetype=hcl
+  autocmd BufNewFile,BufRead *.conf if expand('%:t') =~? 'nginx' || expand('%:p') =~? '/nginx/' | set filetype=nginx | endif
+
+  " 新文件自动 shebang（setline 覆盖初始空行，避免多余空行）
+  autocmd BufNewFile *.sh call setline(1, '#!/bin/bash') | call append(1, '')
+  autocmd BufNewFile *.py call setline(1, '#!/usr/bin/env python3') | call append(1, '')
+
+augroup END
+
+" ====== 服务器场景 ======
+augroup ServerSpecial
+  autocmd!
+
+  " 日志文件：关行号，减少排障时的视觉噪音
+  autocmd BufRead,BufNewFile *.log setlocal nonumber
+
+  " 大文件（>1MB）：禁用 swap/undo 文件，防止卡顿和磁盘占用
+  " 只用 buffer-local 选项，避免影响本会话其他缓冲区
+  autocmd BufReadPre * if getfsize(expand('%')) > 1000000 | setlocal noswapfile noundofile | endif
+augroup END
