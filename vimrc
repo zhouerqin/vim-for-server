@@ -24,12 +24,17 @@
 
 " ====== 基础选项 ======
 set nocompatible
-set encoding=utf-8
-set fileencoding=utf-8
+
+" encoding 不需要设：Vim 默认即 utf-8。fileencoding 也不设——留空表示与
+" encoding 相同、读写不转码，文件编码交给 fileencodings 自动检测
+" （默认 ucs-bom,utf-8,default,latin1）。硬设 fileencoding=utf-8 会强制转码，
+" 并让缓冲区在打开时即被标记 modified（见 :help 'fileencoding'）。
 
 filetype plugin indent on
 syntax enable
 
+" 注意：本文件本身就是 vimrc，Vim 自带的 defaults.vim 不会加载，因此 Vim 的
+" "好用默认值"（showmatch、backspace 等）在这里并不生效，需显式设置。
 set backspace=indent,eol,start
 set autoindent
 set showmatch
@@ -282,7 +287,8 @@ augroup FiletypeSettings
   " 各语言社区规范为准（见下方逐条）。为统一口径，缩进选项总是显式设定，
   " 不依赖 runtime 的既有值，便于审计。
 
-  " Shell：Google Shell Style Guide 用 2 空格；排障时常搜函数名/测试运算符
+  " Shell：Google Shell Style Guide 用 2 空格；iskeyword 追加是我的个人偏好
+  " （排障时便于按名字搜函数/测试运算符），非规范要求，不认同可删
   autocmd FileType sh setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
         \ textwidth=80 formatoptions-=t iskeyword+=@,-,_
         \ | call s:UndoAdd('setlocal tabstop< shiftwidth< softtabstop< expandtab< textwidth< formatoptions< iskeyword<')
